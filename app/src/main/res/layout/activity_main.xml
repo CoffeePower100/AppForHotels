@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <EditText
+        android:id="@+id/hName"
+        android:background="@color/white"
+        android:hint="Hotel name"
+        android:padding="10sp"
+        android:layout_width="match_parent"
+        android:layout_height="50sp" />
+
+        <EditText
+            android:id="@+id/hAddr"
+            android:background="@color/white"
+            android:hint="Hotel address"
+            android:padding="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="50sp" />
+
+        <EditText
+            android:id="@+id/hImg"
+            android:background="@color/white"
+            android:hint="Hotel Image (URL of image)"
+            android:padding="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="50sp" />
+
+        <EditText
+            android:id="@+id/hPrice"
+            android:background="@color/white"
+            android:hint="Hotel price"
+            android:padding="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="50sp" />
+
+        <Button
+        android:layout_marginTop="20sp"
+        android:id="@+id/add_hotel"
+        android:text="Add hotel"
+        android:backgroundTint="@android:color/holo_orange_light"
+        android:layout_width="match_parent"
+        android:layout_height="50sp" />
+
+        <ListView
+        android:id="@+id/hotelsLV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
