@@ -1,7 +1,11 @@
 package com.example.appforhotels;
 
-public class Hotel
-{
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class Hotel implements Parcelable {
     private String name;
     private String addr;
     private String img;
@@ -12,6 +16,14 @@ public class Hotel
         this.addr = addr;
         this.img = img;
         this.price = price;
+    }
+
+    public Hotel()
+    {
+        this.name = "";
+        this.addr = "";
+        this.img = "";
+        this.price = "";
     }
 
     public String getName() {
@@ -45,4 +57,34 @@ public class Hotel
     public void setPrice(String price) {
         this.price = price;
     }
+
+    public Hotel(Parcel source) {
+        name = source.readString();
+        addr = source.readString();
+        price = source.readString();
+        img = source.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(addr);
+        dest.writeString(price);
+        dest.writeString(img);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){
+        public Hotel createFromParcel(Parcel source) {
+            return new Hotel(source);
+        }
+
+        @Override
+        public Hotel[] newArray(int size) {
+            return new Hotel[size];
+        }
+    };
 }

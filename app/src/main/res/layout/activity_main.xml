@@ -10,7 +10,7 @@
         android:layout_height="match_parent" >
 
         <EditText
-        android:id="@+id/hName"
+        android:id="@+id/name"
         android:background="@color/white"
         android:hint="Hotel name"
         android:padding="10sp"
@@ -18,7 +18,7 @@
         android:layout_height="50sp" />
 
         <EditText
-            android:id="@+id/hAddr"
+            android:id="@+id/addr"
             android:background="@color/white"
             android:hint="Hotel address"
             android:padding="10sp"
@@ -26,7 +26,7 @@
             android:layout_height="50sp" />
 
         <EditText
-            android:id="@+id/hImg"
+            android:id="@+id/img"
             android:background="@color/white"
             android:hint="Hotel Image (URL of image)"
             android:padding="10sp"
@@ -34,21 +34,43 @@
             android:layout_height="50sp" />
 
         <EditText
-            android:id="@+id/hPrice"
+            android:id="@+id/price"
             android:background="@color/white"
             android:hint="Hotel price"
             android:padding="10sp"
             android:layout_width="match_parent"
             android:layout_height="50sp" />
 
+        <EditText
+            android:id="@+id/idVal"
+            android:background="@color/white"
+            android:hint="Hotel id"
+            android:padding="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="50sp" />
+
         <Button
         android:layout_marginTop="20sp"
-        android:id="@+id/add_hotel"
+        android:id="@+id/add_hotel_btn"
         android:text="Add hotel"
         android:backgroundTint="@android:color/holo_orange_light"
         android:layout_width="match_parent"
         android:layout_height="50sp" />
 
+        <Button
+            android:layout_marginTop="20sp"
+            android:id="@+id/delete_hotel_btn"
+            android:text="Delete hotel"
+            android:layout_width="match_parent"
+            android:layout_height="50sp" />
+
+        <Button
+            android:layout_marginTop="20sp"
+            android:id="@+id/update_hotel_btn"
+            android:text="Update hotel"
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:layout_marginBottom="40sp"/>
         <ListView
         android:id="@+id/hotelsLV"
         android:layout_width="match_parent"

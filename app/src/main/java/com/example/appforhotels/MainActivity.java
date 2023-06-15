@@ -1,14 +1,43 @@
 package com.example.appforhotels;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    public static final String HOTEL_KEY_NAME = "name";
+    public static final String HOTEL_KEY_PRICE = "price";
+    public static final String HOTEL_KEY_ADDRESS = "addr";
+    public static final String HOTEL_KEY_IMAGE = "img";
+    final String[] ids = {""};
+    private EditText name, addr, img, price, idVal;
+
+    private Button add_hotel_btn, delete_hotel_btn, update_hotel_btn;
     private ArrayList<Hotel> hotelsList = new ArrayList<Hotel>();
     private HotelAdapter hotelAdapt;
     private ListView hotelsLV;
@@ -18,13 +47,172 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        hotelsList.add(new Hotel("Paamonim Hotel Jerusalem",
-                "4 King George street," +
-                        " Jerusalem, 9422904, Israel",
-                "data:image/jpeg;base64,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",
-                "589.00"));
-        hotelAdapt = new HotelAdapter(hotelsList, this.getApplicationContext());
-        hotelsLV = findViewById(R.id.hotelsLV);
-        hotelsLV.setAdapter(hotelAdapt);
+        name = findViewById(R.id.name);
+        addr = findViewById(R.id.addr);
+        img = findViewById(R.id.img);
+        price = findViewById(R.id.price);
+        idVal = findViewById(R.id.idVal);
+
+        add_hotel_btn = findViewById(R.id.add_hotel_btn);
+        delete_hotel_btn = findViewById(R.id.delete_hotel_btn);
+        update_hotel_btn = findViewById((R.id.update_hotel_btn));
+
+        add_hotel_btn.setOnClickListener(this);
+        delete_hotel_btn.setOnClickListener(this);
+        update_hotel_btn.setOnClickListener(this);
+        /*
+        hotelsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), HotelMainPage.class);
+                intent.putExtra("img", "");
+                intent.putExtra("name", "na");
+                intent.putExtra("addr", "a");
+                intent.putExtra("price", "2000.00");
+                startActivity(intent);
+            }
+        });*/
+        getAllHotels();
     }
+
+    @Override
+    public void onClick(View view) {
+        int currId = view.getId();
+        switch (currId) {
+            case R.id.add_hotel_btn:
+                addNewHotel();
+                break;
+            case R.id.delete_hotel_btn:
+                deleteProductById(idVal.getText().toString());
+                break;
+            case R.id.update_hotel_btn:
+                updateProductNameById(idVal.getText().toString());
+                break;
+        }
+    }
+
+    private void addNewHotel() {
+        String hName = name.getText().toString().trim();
+        String hAddr = addr.getText().toString().trim();
+        String hImg = img.getText().toString().trim();
+        String hPrice = price.getText().toString().trim();
+
+
+        if (!hName.isEmpty() && !hAddr.isEmpty() && !hImg.isEmpty() && !hPrice.isEmpty()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put(HOTEL_KEY_NAME, hName);
+            data.put(HOTEL_KEY_ADDRESS, hAddr);
+            data.put(HOTEL_KEY_PRICE, hPrice);
+            data.put(HOTEL_KEY_IMAGE, hImg);
+
+            database
+                    .collection("hotels")
+                    .add(data)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Toast.makeText(getApplicationContext(), "Hotel post created", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+            // clear input from edit text of hotel parameters:
+            name.setText("");
+            addr.setText("");
+            price.setText("");
+            img.setText("");
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Error: name, address, price and image url are required", Toast.LENGTH_LONG).show();
+        }
+
+        getAllHotels();
+    }
+
+    private void deleteProductById(String hId) {
+        if (!hId.isEmpty()) {
+            database.collection("hotels").document(hId)
+                                            .delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    Toast.makeText(getApplicationContext(), "Hotel was deleted", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getApplicationContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Error: id is required", Toast.LENGTH_LONG).show();
+        }
+        getAllHotels();
+    }
+
+    private void updateProductNameById(String pid) {
+        if (!pid.isEmpty()) {
+            DocumentReference document = database.collection("hotels").document(pid);
+            document
+                    .update(
+                            "name", name.getText().toString()
+                    )
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(getApplicationContext(), "Hotel's Name updated", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Error: id is required", Toast.LENGTH_LONG).show();
+        }
+        getAllHotels();
+    }
+    private void getAllHotels()
+    {
+        database
+                .collection("hotels")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        if(task.isSuccessful()){
+                            hotelsList = new ArrayList<Hotel>();
+                            for (QueryDocumentSnapshot document : task.getResult()){
+                                Hotel hObj = document.toObject(Hotel.class);
+                                hotelsList.add(hObj);
+                                idVal.setText(document.getId());
+                            }
+
+                            hotelsLV = findViewById(R.id.hotelsLV);
+                            hotelAdapt = new HotelAdapter(hotelsList, getApplicationContext());
+                            hotelsLV.setAdapter(hotelAdapt);
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
 }

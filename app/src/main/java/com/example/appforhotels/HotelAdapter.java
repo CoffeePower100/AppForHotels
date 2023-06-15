@@ -1,6 +1,7 @@
 package com.example.appforhotels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 public class HotelAdapter extends ArrayAdapter<Hotel>
 {
     private ArrayList<Hotel> hotelsList;
-    Context context;
+    private Context context;
 
     public HotelAdapter(ArrayList<Hotel> data, Context context) {
         super(context, R.layout.hotel_post, data);
@@ -28,9 +29,31 @@ public class HotelAdapter extends ArrayAdapter<Hotel>
         this.context = context;
     }
 
-    private static class ViewHolder {
-        TextView hName, hAddr, hPrice;
-        ImageView hImg;
+     static class ViewHolder {
+        private TextView hName, hAddr, hPrice;
+        private ImageView hImg;
+
+        public String getName()
+        {
+            return hName.toString();
+        }
+
+        public String getAddr()
+        {
+            return hAddr.toString();
+        }
+
+        public String getPrice()
+        {
+            return hPrice.toString();
+        }
+
+        public String getImg()
+        {
+            return ((String)(hImg.getTag()));
+        }
+
+
     }
 
     @NonNull
@@ -67,11 +90,16 @@ public class HotelAdapter extends ArrayAdapter<Hotel>
         viewHolder.hName.setText(currHotel.getName());
         viewHolder.hPrice.setText(currHotel.getPrice());
         viewHolder.hAddr.setText(currHotel.getAddr());
-        Picasso.get()
-                .load(currHotel.getImg())
-                .resize(100, 80)
-                .centerCrop()
-                .into(viewHolder.hImg);
+        try {
+            Picasso.get()
+                    .load(currHotel.getImg())
+                    .resize(100, 80)
+                    .centerCrop()
+                    .into(viewHolder.hImg);
+        }
+        catch (Exception err)
+        {
+        }
 
         return convertView;
 
